@@ -7,8 +7,9 @@ import 'package:snake_flutter/direction_type.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/services.dart';
 import 'direction.dart';
-import 'piece.dart'; // Import package
+import 'piece.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({
@@ -23,7 +24,6 @@ class _GamePageState extends State<GamePage> {
   List<Offset> positions = [];
   int length = 5;
   int step = 20;
-  Direction lastDirection = Direction.right;
   Direction direction = Direction.right;
 
   Piece? food;
@@ -34,7 +34,7 @@ class _GamePageState extends State<GamePage> {
   int? lowerBoundX, upperBoundX, lowerBoundY, upperBoundY;
 
   Timer? timer;
-  double speed = 1;
+  double speed = 0.8;
 
   int score = 0;
 
@@ -48,6 +48,28 @@ class _GamePageState extends State<GamePage> {
     playGameMusic();
 
     restart();
+  }
+
+  void listenToGyroscopeStream() {
+    gyroscopeEvents.listen((GyroscopeEvent event) {
+      if (event.x > 1 && event.x > event.y) {
+        if (direction != Direction.up && direction != Direction.down) {
+          direction = Direction.down;
+        }
+      } else if (event.x < -1 && event.x < event.y) {
+        if (direction != Direction.down && direction != Direction.up) {
+          direction = Direction.up;
+        }
+      } else if (event.y > 1 && event.y > event.x) {
+        if (direction != Direction.left && direction != Direction.right) {
+          direction = Direction.right;
+        }
+      } else if (event.y < -1 && event.y < event.x) {
+        if (direction != Direction.right && direction != Direction.left) {
+          direction = Direction.left;
+        }
+      }
+    });
   }
 
   void foodCollectionVibration() {
@@ -285,11 +307,7 @@ class _GamePageState extends State<GamePage> {
 
   Widget getControls() {
     return ControlPanel(
-      onTapped: (Direction newDirection) {
-        direction = newDirection;
-        lastDirection = direction;
-      },
-      previousDirection: lastDirection,
+      previousDirection: direction,
     );
   }
 
@@ -328,11 +346,9 @@ class _GamePageState extends State<GamePage> {
     length = 5;
     positions = [];
     direction = getRandomDirection();
-    lastDirection = direction;
-    speed = 1;
+    speed = 0.8;
 
     playGameMusic();
-
     changeSpeed();
   }
 
@@ -363,6 +379,8 @@ class _GamePageState extends State<GamePage> {
     lowerBoundY = step;
     upperBoundX = roundToNearestTens(screenWidth!.toInt() - step);
     upperBoundY = roundToNearestTens(screenHeight!.toInt() - step);
+
+    listenToGyroscopeStream();
 
     return Scaffold(
       body: Container(
