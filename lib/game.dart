@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:snake_flutter/control_panel.dart';
 import 'package:snake_flutter/direction_type.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:flutter/services.dart';
 import 'direction.dart';
-import 'piece.dart';
+import 'piece.dart'; // Import package
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({
@@ -36,8 +38,8 @@ class _GamePageState extends State<GamePage> {
 
   int score = 0;
 
-  late AssetsAudioPlayer _assetsAudioPlayer;
-  late AssetsAudioPlayer _loseAudioPlayer;
+  AssetsAudioPlayer? _assetsAudioPlayer;
+  AssetsAudioPlayer? _loseAudioPlayer;
 
   @override
   void initState() {
@@ -48,20 +50,35 @@ class _GamePageState extends State<GamePage> {
     restart();
   }
 
-  void playLoseMusic() {
-    _loseAudioPlayer = AssetsAudioPlayer.withId("0");
-    _loseAudioPlayer.open(
-      Audio("assets/audios/lose.mp3"),
-    );
-    _loseAudioPlayer.play();
+  void foodCollectionVibration() {
+    HapticFeedback.heavyImpact();
   }
 
-  void playGameMusic() {
+  void vibrate() {
+    Vibrate.vibrate();
+  }
+
+  void playLoseMusic() async {
+    if (_assetsAudioPlayer != null) {
+      await _assetsAudioPlayer!.stop();
+    }
+
+    _loseAudioPlayer = AssetsAudioPlayer.withId("0");
+    await _loseAudioPlayer!.open(
+      Audio("assets/audios/lose.mp3"),
+    );
+    await _loseAudioPlayer!.play();
+  }
+
+  void playGameMusic() async {
+    if (_loseAudioPlayer != null) {
+      await _loseAudioPlayer!.stop();
+    }
     _assetsAudioPlayer = AssetsAudioPlayer.withId("0");
-    _assetsAudioPlayer.open(
+    await _assetsAudioPlayer!.open(
       Audio("assets/audios/back.mp3"),
     );
-    _assetsAudioPlayer.play();
+    await _assetsAudioPlayer!.play();
   }
 
   void draw() async {
@@ -179,14 +196,15 @@ class _GamePageState extends State<GamePage> {
         timer!.cancel();
       }
 
-      playLoseMusic();
-
       await Future.delayed(
         const Duration(
           milliseconds: 500,
         ),
         () => showGameOverDialog(),
       );
+
+      playLoseMusic();
+      vibrate();
 
       return position;
     }
@@ -206,14 +224,15 @@ class _GamePageState extends State<GamePage> {
         timer!.cancel();
       }
 
-      playLoseMusic();
-
       await Future.delayed(
         const Duration(
           milliseconds: 500,
         ),
         () => showGameOverDialog(),
       );
+
+      playLoseMusic();
+      vibrate();
 
       return position;
     }
@@ -229,6 +248,7 @@ class _GamePageState extends State<GamePage> {
       speed = speed + 0.25;
       score = score + 5;
       changeSpeed();
+      foodCollectionVibration();
 
       foodPosition = getRandomPositionWithinRange();
     }
