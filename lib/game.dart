@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:snake_flutter/control_panel.dart';
 import 'package:snake_flutter/direction_type.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/services.dart';
+import 'package:snake_flutter/provider/scoreboard_provider.dart';
+import 'package:snake_flutter/routes.dart';
 import 'direction.dart';
 import 'piece.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
@@ -35,11 +38,13 @@ class _GamePageState extends State<GamePage> {
 
   Timer? timer;
   double speed = 0.8;
+  double startingSpeed = 0.8;
 
   int score = 0;
 
   AssetsAudioPlayer? _assetsAudioPlayer;
   AssetsAudioPlayer? _loseAudioPlayer;
+  late String username;
 
   @override
   void initState() {
@@ -48,6 +53,22 @@ class _GamePageState extends State<GamePage> {
     playGameMusic();
 
     restart();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+    username = args['username']!;
+
+    if (args['mode']! == 'hard') {
+      startingSpeed = 1.5;
+    }
+  }
+
+  void saveUserScore() {
+    Provider.of<ScoreboardProvider>(context, listen: false).addUser(username, score);
   }
 
   void listenToGyroscopeStream() {
@@ -178,22 +199,40 @@ class _GamePageState extends State<GamePage> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.amber[700],
           shape: const RoundedRectangleBorder(
-              side: BorderSide(
-                color: Colors.black,
-                width: 3.0,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(10.0))),
-          title: const Text(
-            "Game Over",
-            style: TextStyle(color: Colors.white),
+            side: BorderSide(
+              color: Colors.black,
+              width: 3.0,
+            ),
+            borderRadius: BorderRadius.all(
+              Radius.circular(10.0),
+            ),
+          ),
+          title: const Center(
+            child: Text(
+              "Game Over",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           content: Text(
             "Your game is over but you played well. Your score is " + score.toString() + ".",
             style: const TextStyle(color: Colors.white),
           ),
+          actionsAlignment: MainAxisAlignment.spaceAround,
           actions: [
+            TextButton(
+              onPressed: () async {
+                await _assetsAudioPlayer!.stop();
+
+                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacementNamed(Routes.entryPageRoute);
+              },
+              child: const Text(
+                "Go back to main menu",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
@@ -214,6 +253,8 @@ class _GamePageState extends State<GamePage> {
     late Offset nextPosition;
 
     if (detectBorderCollision(position)) {
+      saveUserScore();
+
       if (timer != null && timer!.isActive) {
         timer!.cancel();
       }
@@ -242,6 +283,8 @@ class _GamePageState extends State<GamePage> {
     }
 
     if (detectSnakeCollision(nextPosition)) {
+      saveUserScore();
+
       if (timer != null && timer!.isActive) {
         timer!.cancel();
       }
@@ -346,7 +389,7 @@ class _GamePageState extends State<GamePage> {
     length = 5;
     positions = [];
     direction = getRandomDirection();
-    speed = 0.8;
+    speed = startingSpeed;
 
     playGameMusic();
     changeSpeed();
@@ -384,7 +427,7 @@ class _GamePageState extends State<GamePage> {
 
     return Scaffold(
       body: Container(
-        color: Colors.blueGrey,
+        color: Colors.green[600],
         child: Stack(
           children: [
             getPlayAreaBorder(),

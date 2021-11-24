@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-
-import 'game.dart';
+import 'package:snake_flutter/entry_screen.dart';
+import 'package:snake_flutter/provider/scoreboard_provider.dart';
+import 'package:snake_flutter/routes.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,14 +13,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Snake',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ScoreboardProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Snake',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: const EntryScreen(),
+        routes: Routes.routes,
       ),
-      home: const GamePage(),
     );
   }
 }
