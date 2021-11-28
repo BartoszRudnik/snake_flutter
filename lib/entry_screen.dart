@@ -35,86 +35,108 @@ class _EntryScreenState extends State<EntryScreen> {
         builder: (ctx, loadingResult) => loadingResult.connectionState == ConnectionState.waiting
             ? const CircularProgressIndicator()
             : SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      "Snake !",
-                      style: GoogleFonts.pacifico(
-                        textStyle: TextStyle(
-                          color: Colors.amber[800],
-                          fontSize: 64,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    Column(
+                child: SingleChildScrollView(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextButton(
-                              onPressed: () async {
-                                final args = await StartGameDialog.showStartDialog(context);
-
-                                if (args.isNotEmpty) {
-                                  Navigator.of(context).pushNamed(
-                                    Routes.gamePageRoute,
-                                    arguments: {
-                                      "username": args[0],
-                                      "mode": args[1],
-                                    },
-                                  );
-                                }
-                              },
-                              child: Text(
-                                'Play',
-                                style: GoogleFonts.pacifico(
-                                  textStyle: TextStyle(
-                                    color: Colors.amber[700],
-                                    fontSize: 42,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: SizedBox(
+                              width: 200,
+                              height: 200,
+                              child: Image.asset(
+                                "assets/images/snake_logo2.png",
+                                fit: BoxFit.cover,
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            Icon(
-                              Icons.play_arrow,
-                              color: Colors.amber[700],
-                              size: 42,
-                            ),
-                          ],
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(Routes.scoreboardRoute);
-                              },
-                              child: Text(
-                                'Scoreboard',
-                                style: GoogleFonts.pacifico(
-                                  textStyle: TextStyle(
-                                    color: Colors.amber[700],
-                                    fontSize: 42,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
+                        Expanded(
+                          child: Text(
+                            "Snake !",
+                            style: GoogleFonts.pacifico(
+                              textStyle: TextStyle(
+                                color: Colors.amber[800],
+                                fontSize: 64,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            Icon(
-                              Icons.table_chart,
-                              color: Colors.amber[700],
-                              size: 42,
-                            ),
-                          ],
+                          ),
+                        ),
+                        Flexible(
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextButton(
+                                    onPressed: () async {
+                                      final args = await StartGameDialog.showStartDialog(context);
+
+                                      if (args.isNotEmpty) {
+                                        Navigator.of(context).pushNamed(
+                                          Routes.gamePageRoute,
+                                          arguments: {
+                                            "username": args[0],
+                                            "mode": args[1],
+                                          },
+                                        );
+                                      }
+                                    },
+                                    child: Text(
+                                      'Play',
+                                      style: GoogleFonts.pacifico(
+                                        textStyle: TextStyle(
+                                          color: Colors.amber[700],
+                                          fontSize: 42,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Icon(
+                                    Icons.play_arrow,
+                                    color: Colors.amber[700],
+                                    size: 42,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pushNamed(Routes.scoreboardRoute);
+                                    },
+                                    child: Text(
+                                      'Scoreboard',
+                                      style: GoogleFonts.pacifico(
+                                        textStyle: TextStyle(
+                                          color: Colors.amber[700],
+                                          fontSize: 42,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Icon(
+                                    Icons.table_chart,
+                                    color: Colors.amber[700],
+                                    size: 42,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
       ),

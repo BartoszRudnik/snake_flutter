@@ -38,87 +38,93 @@ class StartGameDialog {
               ),
             ),
             contentPadding: const EdgeInsets.all(12),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Choose mode",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Flexible(
+                    child: Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Choose mode",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    RadioListTile(
-                      title: const Text(
-                        "Normal",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      activeColor: Colors.white,
-                      value: "normal",
-                      groupValue: actualMode,
-                      onChanged: (value) {
-                        setState(() {
-                          actualMode = value as String;
-                        });
-                      },
-                    ),
-                    RadioListTile(
-                      title: const Text(
-                        "Hard",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      activeColor: Colors.white,
-                      value: "hard",
-                      groupValue: actualMode,
-                      onChanged: (value) {
-                        setState(() {
-                          actualMode = value as String;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Column(
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Enter nickname",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+                        const SizedBox(height: 5),
+                        RadioListTile(
+                          title: const Text(
+                            "Normal",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          activeColor: Colors.white,
+                          value: "normal",
+                          groupValue: actualMode,
+                          onChanged: (value) {
+                            setState(() {
+                              actualMode = value as String;
+                            });
+                          },
                         ),
-                      ),
+                        RadioListTile(
+                          title: const Text(
+                            "Hard",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          activeColor: Colors.white,
+                          value: "hard",
+                          groupValue: actualMode,
+                          onChanged: (value) {
+                            setState(() {
+                              actualMode = value as String;
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 5),
-                    Form(
-                      key: _formKey,
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value!.trim().isEmpty) {
-                            return "Please enter nickname";
-                          }
-                        },
-                        onChanged: (value) {
-                          nickname = value;
-                        },
-                        style: const TextStyle(color: Colors.white),
-                        decoration: TextFieldThemes.textFieldDecoration("Nickname", ctx),
-                      ),
+                  ),
+                  const SizedBox(height: 20),
+                  Flexible(
+                    child: Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Enter nickname",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Form(
+                          key: _formKey,
+                          child: TextFormField(
+                            validator: (value) {
+                              if (value!.trim().isEmpty) {
+                                return "Please enter nickname";
+                              }
+                            },
+                            onChanged: (value) {
+                              nickname = value;
+                            },
+                            style: const TextStyle(color: Colors.white),
+                            decoration: TextFieldThemes.textFieldDecoration("Nickname", ctx),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
             actionsAlignment: MainAxisAlignment.spaceAround,
             actions: [

@@ -33,6 +33,8 @@ flutter:
   assets:
     - assets/audios/back.mp3
     - assets/audios/lose.mp3
+    - assets/images/snake_logo.png
+    - assets/images/snake_logo2.png
 
   # example:
   # fonts:
