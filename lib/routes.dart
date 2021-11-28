@@ -10,6 +10,6 @@ class Routes {
   static final routes = {
     gamePageRoute: (ctx) => const GamePage(),
     entryPageRoute: (ctx) => const EntryScreen(),
-    scoreboardRoute: (ctx) => const Scoreboard(),
+    scoreboardRoute: (ctx) => Scoreboard(),
   };
 }
