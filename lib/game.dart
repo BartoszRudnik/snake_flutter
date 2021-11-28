@@ -13,6 +13,7 @@ import 'direction.dart';
 import 'piece.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:wakelock/wakelock.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({
@@ -47,11 +48,18 @@ class _GamePageState extends State<GamePage> {
   late String username;
 
   @override
+  void dispose() {
+    super.dispose();
+
+    Wakelock.disable();
+  }
+
+  @override
   void initState() {
     super.initState();
 
+    Wakelock.enable();
     playGameMusic();
-
     restart();
   }
 
@@ -226,7 +234,7 @@ class _GamePageState extends State<GamePage> {
                 await _assetsAudioPlayer!.stop();
 
                 Navigator.of(context).pop();
-                Navigator.of(context).pushReplacementNamed(Routes.entryPageRoute);
+                Navigator.of(context).pop();
               },
               child: const Text(
                 "Go back to main menu",
