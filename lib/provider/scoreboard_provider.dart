@@ -29,11 +29,10 @@ class ScoreboardProvider with ChangeNotifier {
 
   void saveData() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.clear();
 
     final usersData = json.encode(users);
 
-    prefs.setString("usersData", usersData);
+    await prefs.setString("usersData", usersData);
   }
 
   Future<bool> loadData() async {

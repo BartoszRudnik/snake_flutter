@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snake_flutter/provider/scoreboard_provider.dart';
+import 'package:snake_flutter/provider/settings_provider.dart';
 import 'package:snake_flutter/routes.dart';
 import 'package:snake_flutter/utils/start_game_dialog.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,7 +17,12 @@ class _EntryScreenState extends State<EntryScreen> {
   late Future _future;
 
   Future<void> loadPreviousData() async {
-    await Provider.of<ScoreboardProvider>(context, listen: false).loadData();
+    await Future.wait(
+      [
+        Provider.of<ScoreboardProvider>(context, listen: false).loadData(),
+        Provider.of<SettingsProvider>(context, listen: false).loadSettings(),
+      ],
+    );
   }
 
   @override
@@ -28,6 +34,8 @@ class _EntryScreenState extends State<EntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<SettingsProvider>(context).settings;
+
     return Scaffold(
       backgroundColor: Colors.green[600],
       body: FutureBuilder(
@@ -40,6 +48,7 @@ class _EntryScreenState extends State<EntryScreen> {
                     height: MediaQuery.of(context).size.height,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: Padding(
@@ -66,74 +75,97 @@ class _EntryScreenState extends State<EntryScreen> {
                             ),
                           ),
                         ),
-                        Flexible(
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextButton(
-                                    onPressed: () async {
-                                      final args = await StartGameDialog.showStartDialog(context);
+                        TextButton(
+                          onPressed: () async {
+                            final args = await StartGameDialog.showStartDialog(context);
 
-                                      if (args.isNotEmpty) {
-                                        Navigator.of(context).pushNamed(
-                                          Routes.gamePageRoute,
-                                          arguments: {
-                                            "username": args[0],
-                                            "mode": args[1],
-                                          },
-                                        );
-                                      }
-                                    },
-                                    child: Text(
-                                      'Play',
-                                      style: GoogleFonts.pacifico(
-                                        textStyle: TextStyle(
-                                          color: Colors.amber[700],
-                                          fontSize: 42,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Icon(
-                                    Icons.play_arrow,
+                            if (args.isNotEmpty) {
+                              Navigator.of(context).pushNamed(
+                                Routes.gamePageRoute,
+                                arguments: {
+                                  "username": args[0],
+                                  "mode": args[1],
+                                },
+                              );
+                            }
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Play',
+                                style: GoogleFonts.pacifico(
+                                  textStyle: TextStyle(
                                     color: Colors.amber[700],
-                                    size: 42,
+                                    fontSize: 42,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                ],
+                                ),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pushNamed(Routes.scoreboardRoute);
-                                    },
-                                    child: Text(
-                                      'Scoreboard',
-                                      style: GoogleFonts.pacifico(
-                                        textStyle: TextStyle(
-                                          color: Colors.amber[700],
-                                          fontSize: 42,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Icon(
-                                    Icons.table_chart,
-                                    color: Colors.amber[700],
-                                    size: 42,
-                                  ),
-                                ],
+                              const SizedBox(width: 10),
+                              Icon(
+                                Icons.play_arrow,
+                                color: Colors.amber[700],
+                                size: 42,
                               ),
                             ],
                           ),
                         ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(Routes.scoreboardRoute);
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Scoreboard',
+                                style: GoogleFonts.pacifico(
+                                  textStyle: TextStyle(
+                                    color: Colors.amber[700],
+                                    fontSize: 42,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Icon(
+                                Icons.table_chart,
+                                color: Colors.amber[700],
+                                size: 42,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 50.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  Provider.of<SettingsProvider>(context, listen: false).changeMusicStatus();
+                                },
+                                icon: Icon(
+                                  settings.isMusic ? Icons.headset_outlined : Icons.headset_off_outlined,
+                                  color: Colors.amber[700],
+                                  size: 42,
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              IconButton(
+                                onPressed: () {
+                                  Provider.of<SettingsProvider>(context, listen: false).changeVibrationStatus();
+                                },
+                                icon: Icon(
+                                  settings.isVibration ? Icons.vibration_outlined : Icons.mobile_off_outlined,
+                                  color: Colors.amber[700],
+                                  size: 42,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),

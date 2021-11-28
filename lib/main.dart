@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snake_flutter/entry_screen.dart';
 import 'package:snake_flutter/provider/scoreboard_provider.dart';
+import 'package:snake_flutter/provider/settings_provider.dart';
 import 'package:snake_flutter/routes.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => ScoreboardProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SettingsProvider(),
         ),
       ],
       child: MaterialApp(

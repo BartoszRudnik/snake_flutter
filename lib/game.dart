@@ -8,7 +8,7 @@ import 'package:snake_flutter/direction_type.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/services.dart';
 import 'package:snake_flutter/provider/scoreboard_provider.dart';
-import 'package:snake_flutter/routes.dart';
+import 'package:snake_flutter/provider/settings_provider.dart';
 import 'direction.dart';
 import 'piece.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
@@ -106,30 +106,43 @@ class _GamePageState extends State<GamePage> {
   }
 
   void vibrate() {
-    Vibrate.vibrate();
+    final isVibrate = Provider.of<SettingsProvider>(context, listen: false).settings.isVibration;
+
+    if (isVibrate) {
+      Vibrate.vibrate();
+    }
   }
 
   void playLoseMusic() async {
+    final isMusic = Provider.of<SettingsProvider>(context, listen: false).settings.isMusic;
+
     if (_assetsAudioPlayer != null) {
       await _assetsAudioPlayer!.stop();
     }
 
-    _loseAudioPlayer = AssetsAudioPlayer.withId("0");
-    await _loseAudioPlayer!.open(
-      Audio("assets/audios/lose.mp3"),
-    );
-    await _loseAudioPlayer!.play();
+    if (isMusic) {
+      _loseAudioPlayer = AssetsAudioPlayer.withId("0");
+      await _loseAudioPlayer!.open(
+        Audio("assets/audios/lose.mp3"),
+      );
+      await _loseAudioPlayer!.play();
+    }
   }
 
   void playGameMusic() async {
+    final isMusic = Provider.of<SettingsProvider>(context, listen: false).settings.isMusic;
+
     if (_loseAudioPlayer != null) {
       await _loseAudioPlayer!.stop();
     }
-    _assetsAudioPlayer = AssetsAudioPlayer.withId("0");
-    await _assetsAudioPlayer!.open(
-      Audio("assets/audios/back.mp3"),
-    );
-    await _assetsAudioPlayer!.play();
+
+    if (isMusic) {
+      _assetsAudioPlayer = AssetsAudioPlayer.withId("0");
+      await _assetsAudioPlayer!.open(
+        Audio("assets/audios/back.mp3"),
+      );
+      await _assetsAudioPlayer!.play();
+    }
   }
 
   void draw() async {
@@ -231,7 +244,9 @@ class _GamePageState extends State<GamePage> {
           actions: [
             TextButton(
               onPressed: () async {
-                await _assetsAudioPlayer!.stop();
+                if (_assetsAudioPlayer != null) {
+                  await _assetsAudioPlayer!.stop();
+                }
 
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
