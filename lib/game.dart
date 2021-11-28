@@ -377,9 +377,17 @@ class _GamePageState extends State<GamePage> {
     return Positioned(
       top: 50.0,
       right: 40.0,
-      child: Text(
-        "Score: " + score.toString(),
-        style: const TextStyle(fontSize: 24.0),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: child,
+        ),
+        child: Text(
+          "Score: " + score.toString(),
+          key: ValueKey(score),
+          style: const TextStyle(fontSize: 24.0),
+        ),
       ),
     );
   }
