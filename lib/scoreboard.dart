@@ -126,17 +126,26 @@ class _ScoreboardState extends State<Scoreboard> with TickerProviderStateMixin<S
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              TopLeaderBoard(
-                                index: 2,
-                                username: users.length >= 2 ? users[1].username : '',
+                              Expanded(
+                                flex: 1,
+                                child: TopLeaderBoard(
+                                  index: 2,
+                                  username: users.length >= 2 ? users[1].username : '',
+                                ),
                               ),
-                              TopLeaderBoard(
-                                index: 1,
-                                username: users.isNotEmpty ? users[0].username : '',
+                              Expanded(
+                                flex: 2,
+                                child: TopLeaderBoard(
+                                  index: 1,
+                                  username: users.isNotEmpty ? users[0].username : '',
+                                ),
                               ),
-                              TopLeaderBoard(
-                                index: 3,
-                                username: users.length >= 3 ? users[2].username : '',
+                              Expanded(
+                                flex: 1,
+                                child: TopLeaderBoard(
+                                  index: 3,
+                                  username: users.length >= 3 ? users[2].username : '',
+                                ),
                               ),
                             ],
                           ),
