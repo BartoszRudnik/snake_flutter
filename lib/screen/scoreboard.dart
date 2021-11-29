@@ -1,13 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:snake_flutter/model/user.dart';
 import 'package:snake_flutter/provider/scoreboard_provider.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:snake_flutter/widget/button/change_scoreboard_button.dart';
+import 'package:snake_flutter/widget/scoreboard_appbar.dart';
+import 'package:snake_flutter/widget/single_user_score.dart';
 import 'package:snake_flutter/widget/top_leaderboard.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -80,32 +78,9 @@ class _ScoreboardState extends State<Scoreboard> with TickerProviderStateMixin<S
           setActiveMode: changeActualMode,
           hideFloatingButton: hideFloatingButton,
         ),
-        appBar: AppBar(
-          backgroundColor: Colors.green[800],
-          elevation: 0,
-          titleSpacing: 0,
-          centerTitle: true,
-          title: Text(
-            "Scoreboard - " + actualMode,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 24,
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () async {
-                final fileBytes = await screenshotController.capture();
-                final directory = await getApplicationDocumentsDirectory();
-                final image = File('${directory.path}/liveResultsAppScreenshot.png');
-
-                image.writeAsBytesSync(fileBytes!);
-
-                await Share.shareFiles([image.path]);
-              },
-              icon: const Icon(Icons.share_outlined),
-            )
-          ],
+        appBar: ScoreBoardAppBar(
+          actualMode: actualMode,
+          screenshotController: screenshotController,
         ),
         backgroundColor: Colors.green[600],
         body: Screenshot(
@@ -177,72 +152,11 @@ class _ScoreboardState extends State<Scoreboard> with TickerProviderStateMixin<S
                             vertical: 8.0,
                             horizontal: 16,
                           ),
-                          child: ListTile(
-                            leading: index == 0
-                                ? const FaIcon(
-                                    FontAwesomeIcons.trophy,
-                                    color: Colors.white,
-                                  )
-                                : Text(
-                                    (index + 1).toString(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                            title: SizedBox(
-                              height: 50,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          height: 60,
-                                          width: 60,
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: CircleAvatar(
-                                            backgroundImage: MemoryImage(users[index].image!),
-                                            radius: 30,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          users[index].username,
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w500,
-                                            color: index == 0 ? Colors.white : Colors.black,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          users[index].score.toString(),
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            color: index == 0 ? Colors.white : Colors.black,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Icon(
-                                          Icons.star_rate,
-                                          color: index == 0 ? Colors.white : Colors.black,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          child: SingleUserScore(
+                            index: index,
+                            image: users[index].image,
+                            username: users[index].username,
+                            score: users[index].score,
                           ),
                         ),
                       ),

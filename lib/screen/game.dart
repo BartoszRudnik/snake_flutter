@@ -4,13 +4,16 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:snake_flutter/control_panel.dart';
-import 'package:snake_flutter/direction_type.dart';
+import 'package:snake_flutter/utils/game_over_dialog.dart';
+import 'package:snake_flutter/widget/control_panel.dart';
+import 'package:snake_flutter/utils/direction_type.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:snake_flutter/provider/scoreboard_provider.dart';
 import 'package:snake_flutter/provider/settings_provider.dart';
-import 'direction.dart';
-import 'piece.dart';
+import 'package:snake_flutter/widget/game_screen_border.dart';
+import 'package:snake_flutter/widget/game_screen_score.dart';
+import '../utils/direction.dart';
+import '../widget/piece.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:wakelock/wakelock.dart';
@@ -30,11 +33,9 @@ class _GamePageState extends State<GamePage> {
   int step = 20;
   Direction direction = Direction.right;
 
-  Piece? food;
+  Piece? foodPiece;
   Offset? foodPosition;
 
-  double? screenWidth;
-  double? screenHeight;
   int? lowerBoundX, upperBoundX, lowerBoundY, upperBoundY;
 
   Timer? timer;
@@ -106,7 +107,11 @@ class _GamePageState extends State<GamePage> {
   }
 
   void foodCollectionVibration() {
-    HapticFeedback.heavyImpact();
+    final isVibrate = Provider.of<SettingsProvider>(context, listen: false).settings.isVibration;
+
+    if (isVibrate) {
+      HapticFeedback.heavyImpact();
+    }
   }
 
   void vibrate() {
@@ -141,6 +146,7 @@ class _GamePageState extends State<GamePage> {
     }
 
     if (isMusic) {
+      _assetsAudioPlayer = null;
       _assetsAudioPlayer = AssetsAudioPlayer.withId("0");
       await _assetsAudioPlayer!.open(
         Audio("assets/audios/back.mp3"),
@@ -218,64 +224,6 @@ class _GamePageState extends State<GamePage> {
     }
   }
 
-  void showGameOverDialog() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: Colors.amber[700],
-          shape: const RoundedRectangleBorder(
-            side: BorderSide(
-              color: Colors.black,
-              width: 3.0,
-            ),
-            borderRadius: BorderRadius.all(
-              Radius.circular(10.0),
-            ),
-          ),
-          title: const Center(
-            child: Text(
-              "Game Over",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          content: Text(
-            "Your game is over but you played well. Your score is " + score.toString() + ".",
-            style: const TextStyle(color: Colors.white),
-          ),
-          actionsAlignment: MainAxisAlignment.spaceAround,
-          actions: [
-            TextButton(
-              onPressed: () async {
-                if (_assetsAudioPlayer != null) {
-                  await _assetsAudioPlayer!.stop();
-                }
-
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                "Go back to main menu",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                restart();
-              },
-              child: const Text(
-                "Restart",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<Offset> getNextPosition(Offset position) async {
     late Offset nextPosition;
 
@@ -290,7 +238,7 @@ class _GamePageState extends State<GamePage> {
         const Duration(
           milliseconds: 500,
         ),
-        () => showGameOverDialog(),
+        () => GameOverDialog.showGameOverDialog(context, score, restart, _loseAudioPlayer),
       );
 
       playLoseMusic();
@@ -320,7 +268,7 @@ class _GamePageState extends State<GamePage> {
         const Duration(
           milliseconds: 500,
         ),
-        () => showGameOverDialog(),
+        () => GameOverDialog.showGameOverDialog(context, score, restart, _loseAudioPlayer),
       );
 
       playLoseMusic();
@@ -345,7 +293,7 @@ class _GamePageState extends State<GamePage> {
       foodPosition = getRandomPositionWithinRange();
     }
 
-    food = Piece(
+    foodPiece = Piece(
       posX: foodPosition!.dx.toInt(),
       posY: foodPosition!.dy.toInt(),
       size: step,
@@ -375,12 +323,6 @@ class _GamePageState extends State<GamePage> {
     return pieces;
   }
 
-  Widget getControls() {
-    return ControlPanel(
-      previousDirection: direction,
-    );
-  }
-
   int roundToNearestTens(int num) {
     int divisor = step;
     int output = (num ~/ divisor) * divisor;
@@ -395,27 +337,11 @@ class _GamePageState extends State<GamePage> {
       timer!.cancel();
     }
 
-    timer = Timer.periodic(Duration(milliseconds: 200 ~/ speed), (timer) {
-      setState(() {});
-    });
-  }
-
-  Widget getScore() {
-    return Positioned(
-      top: 50.0,
-      right: 40.0,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 400),
-        transitionBuilder: (child, animation) => FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
-        child: Text(
-          "Score: " + score.toString(),
-          key: ValueKey(score),
-          style: const TextStyle(fontSize: 24.0),
-        ),
-      ),
+    timer = Timer.periodic(
+      Duration(milliseconds: 200 ~/ speed),
+      (timer) {
+        setState(() {});
+      },
     );
   }
 
@@ -430,33 +356,15 @@ class _GamePageState extends State<GamePage> {
     changeSpeed();
   }
 
-  Widget getPlayAreaBorder() {
-    return Positioned(
-      top: lowerBoundY!.toDouble(),
-      left: lowerBoundX!.toDouble(),
-      child: Container(
-        width: (upperBoundX! - lowerBoundX! + step).toDouble(),
-        height: (upperBoundY! - lowerBoundY! + step).toDouble(),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.black.withOpacity(0.2),
-            style: BorderStyle.solid,
-            width: 1.0,
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     lowerBoundX = step;
     lowerBoundY = step;
-    upperBoundX = roundToNearestTens(screenWidth!.toInt() - step);
-    upperBoundY = roundToNearestTens(screenHeight!.toInt() - step);
+    upperBoundX = roundToNearestTens(screenWidth.toInt() - step);
+    upperBoundY = roundToNearestTens(screenHeight.toInt() - step);
 
     listenToGyroscopeStream();
 
@@ -465,13 +373,19 @@ class _GamePageState extends State<GamePage> {
         color: Colors.green[600],
         child: Stack(
           children: [
-            getPlayAreaBorder(),
+            GameScreenBorder(
+              lowerBoundX: lowerBoundX,
+              lowerBoundY: lowerBoundY,
+              upperBoundX: upperBoundX,
+              upperBoundY: upperBoundY,
+              step: step,
+            ),
             Stack(
               children: getPieces(),
             ),
-            getControls(),
-            food!,
-            getScore(),
+            ControlPanel(previousDirection: direction),
+            foodPiece!,
+            GameScreenScore(score: score),
           ],
         ),
       ),

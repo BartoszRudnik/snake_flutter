@@ -1,6 +1,6 @@
-import 'package:snake_flutter/entry_screen.dart';
-import 'package:snake_flutter/game.dart';
-import 'package:snake_flutter/scoreboard.dart';
+import 'package:snake_flutter/screen/entry_screen.dart';
+import 'package:snake_flutter/screen/game.dart';
+import 'package:snake_flutter/screen/scoreboard.dart';
 
 class Routes {
   static String gamePageRoute = "/gamePage";

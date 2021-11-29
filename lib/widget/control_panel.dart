@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:snake_flutter/inactive_control_button.dart';
-import 'direction.dart';
+import 'package:snake_flutter/widget/button/inactive_control_button.dart';
+import '../utils/direction.dart';
 
 class ControlPanel extends StatelessWidget {
   final Direction previousDirection;

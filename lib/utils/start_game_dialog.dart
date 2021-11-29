@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:snake_flutter/text_field_themes.dart';
+import 'package:snake_flutter/config/text_field_themes.dart';
 
 class StartGameDialog {
   static Future<List<dynamic>> showStartDialog(BuildContext context) async {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:snake_flutter/entry_screen.dart';
+import 'package:snake_flutter/screen/entry_screen.dart';
 import 'package:snake_flutter/provider/scoreboard_provider.dart';
 import 'package:snake_flutter/provider/settings_provider.dart';
-import 'package:snake_flutter/routes.dart';
+import 'package:snake_flutter/config/routes.dart';
 import 'package:provider/provider.dart';
 
 void main() {

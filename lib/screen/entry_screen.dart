@@ -3,9 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:snake_flutter/provider/scoreboard_provider.dart';
 import 'package:snake_flutter/provider/settings_provider.dart';
-import 'package:snake_flutter/routes.dart';
+import 'package:snake_flutter/config/routes.dart';
 import 'package:snake_flutter/utils/start_game_dialog.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:snake_flutter/widget/button/entry_screen_button_design.dart';
+import 'package:snake_flutter/widget/entry_screen_title.dart';
 
 class EntryScreen extends StatefulWidget {
   const EntryScreen({Key? key}) : super(key: key);
@@ -58,31 +59,7 @@ class _EntryScreenState extends State<EntryScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 16.0),
-                            child: SizedBox(
-                              width: 200,
-                              height: 200,
-                              child: Image.asset(
-                                "assets/images/snake_logo2.png",
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            "Snake !",
-                            style: GoogleFonts.pacifico(
-                              textStyle: TextStyle(
-                                color: Colors.amber[800],
-                                fontSize: 64,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
+                        const EntryScreenTitle(),
                         TextButton(
                           onPressed: () async {
                             final args = await StartGameDialog.showStartDialog(context);
@@ -98,52 +75,18 @@ class _EntryScreenState extends State<EntryScreen> {
                               );
                             }
                           },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Play',
-                                style: GoogleFonts.pacifico(
-                                  textStyle: TextStyle(
-                                    color: Colors.amber[700],
-                                    fontSize: 42,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Icon(
-                                Icons.play_arrow,
-                                color: Colors.amber[700],
-                                size: 42,
-                              ),
-                            ],
+                          child: const EntryScreenButtonDesign(
+                            iconData: Icons.play_arrow,
+                            buttonTitle: "Play",
                           ),
                         ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pushNamed(Routes.scoreboardRoute);
                           },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Scoreboard',
-                                style: GoogleFonts.pacifico(
-                                  textStyle: TextStyle(
-                                    color: Colors.amber[700],
-                                    fontSize: 42,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Icon(
-                                Icons.table_chart,
-                                color: Colors.amber[700],
-                                size: 42,
-                              ),
-                            ],
+                          child: const EntryScreenButtonDesign(
+                            iconData: Icons.table_chart,
+                            buttonTitle: "Scoreboard",
                           ),
                         ),
                         Padding(
