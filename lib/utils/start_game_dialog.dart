@@ -1,9 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:snake_flutter/text_field_themes.dart';
 
 class StartGameDialog {
-  static Future<List<String>> showStartDialog(BuildContext context) async {
+  static Future<List<dynamic>> showStartDialog(BuildContext context) async {
+    Uint8List? image;
+
     final result = await showDialog(
       barrierDismissible: false,
       context: context,
@@ -28,7 +34,7 @@ class StartGameDialog {
               padding: EdgeInsets.all(8.0),
               child: Center(
                 child: Text(
-                  "Enter settings",
+                  "Settings",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -96,6 +102,55 @@ class StartGameDialog {
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
+                            "Choose avatar",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            final ImagePicker _picker = ImagePicker();
+
+                            XFile? newImage = await _picker.pickImage(source: ImageSource.gallery);
+                            final tmpImage = await newImage!.readAsBytes();
+
+                            setState(() {
+                              image = tmpImage;
+                            });
+                          },
+                          child: image == null
+                              ? Container(
+                                  height: 60,
+                                  width: 60,
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: const CircleAvatar(
+                                    backgroundImage: AssetImage("assets/images/avatar.png"),
+                                    radius: 30,
+                                  ),
+                                )
+                              : Container(
+                                  height: 60,
+                                  width: 60,
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: CircleAvatar(
+                                    backgroundImage: MemoryImage(image!),
+                                    radius: 30,
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Flexible(
+                    child: Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
                             "Enter nickname",
                             style: TextStyle(
                               color: Colors.white,
@@ -140,7 +195,17 @@ class StartGameDialog {
               TextButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    Navigator.of(context).pop([nickname, actualMode]);
+                    if (image == null) {
+                      await rootBundle.load("assets/images/avatar.png").then((data) => image = data.buffer.asUint8List());
+                    }
+
+                    Navigator.of(context).pop(
+                      [
+                        nickname,
+                        actualMode,
+                        image!,
+                      ],
+                    );
                   }
                 },
                 child: const Text(

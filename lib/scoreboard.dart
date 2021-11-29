@@ -66,15 +66,15 @@ class Scoreboard extends StatelessWidget {
                           children: [
                             TopLeaderBoard(
                               index: 2,
-                              username: users[1].username,
+                              username: users.length >= 2 ? users[1].username : '',
                             ),
                             TopLeaderBoard(
                               index: 1,
-                              username: users[0].username,
+                              username: users.isNotEmpty ? users[0].username : '',
                             ),
                             TopLeaderBoard(
                               index: 3,
-                              username: users[2].username,
+                              username: users.length >= 3 ? users[2].username : '',
                             ),
                           ],
                         ),
@@ -94,14 +94,15 @@ class Scoreboard extends StatelessWidget {
                       ),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: index == 0 ? Colors.amber[800] : Colors.green[600],
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20),
-                            )),
+                          color: index == 0 ? Colors.amber[800] : Colors.green[600],
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                          ),
+                        ),
                         padding: const EdgeInsets.symmetric(
                           vertical: 8.0,
-                          horizontal: 25,
+                          horizontal: 16,
                         ),
                         child: ListTile(
                           leading: index == 0
@@ -119,33 +120,52 @@ class Scoreboard extends StatelessWidget {
                           title: SizedBox(
                             height: 50,
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    users[index].username,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                      color: index == 0 ? Colors.white : Colors.black,
-                                    ),
+                                  flex: 3,
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        height: 60,
+                                        width: 60,
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: CircleAvatar(
+                                          backgroundImage: MemoryImage(users[index].image!),
+                                          radius: 30,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        users[index].username,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                          color: index == 0 ? Colors.white : Colors.black,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      users[index].score.toString(),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
+                                Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        users[index].score.toString(),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: index == 0 ? Colors.white : Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Icon(
+                                        Icons.star_rate,
                                         color: index == 0 ? Colors.white : Colors.black,
                                       ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Icon(
-                                      Icons.star_rate,
-                                      color: index == 0 ? Colors.white : Colors.black,
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,6 +47,8 @@ class _GamePageState extends State<GamePage> {
   AssetsAudioPlayer? _assetsAudioPlayer;
   AssetsAudioPlayer? _loseAudioPlayer;
   late String username;
+  late String mode;
+  late Uint8List image;
 
   @override
   void dispose() {
@@ -67,16 +70,18 @@ class _GamePageState extends State<GamePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
-    username = args['username']!;
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    username = args['username']! as String;
+    mode = args['mode'] as String;
+    image = args['image'] as Uint8List;
 
-    if (args['mode']! == 'hard') {
+    if (mode == 'hard') {
       startingSpeed = 1.5;
     }
   }
 
   void saveUserScore() {
-    Provider.of<ScoreboardProvider>(context, listen: false).addUser(username, score);
+    Provider.of<ScoreboardProvider>(context, listen: false).addUser(username, score, mode, image);
   }
 
   void listenToGyroscopeStream() {

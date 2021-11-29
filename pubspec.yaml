@@ -24,6 +24,7 @@ dependencies:
   screenshot: ^1.2.3
   share_plus: ^3.0.4
   path_provider: ^2.0.7
+  image_picker: ^0.8.4+4
 
 dev_dependencies:
   flutter_test:
@@ -37,7 +38,7 @@ flutter:
   assets:
     - assets/audios/back.mp3
     - assets/audios/lose.mp3
-    - assets/images/snake_logo.png
+    - assets/images/avatar.png
     - assets/images/snake_logo2.png
 
   # example:

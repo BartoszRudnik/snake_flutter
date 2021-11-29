@@ -85,6 +85,7 @@ class _EntryScreenState extends State<EntryScreen> {
                                 arguments: {
                                   "username": args[0],
                                   "mode": args[1],
+                                  "image": args[2],
                                 },
                               );
                             }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,11 +17,13 @@ class ScoreboardProvider with ChangeNotifier {
     return users;
   }
 
-  void addUser(String userName, int score) {
+  void addUser(String userName, int score, String mode, Uint8List? image) {
     users.add(
       User(
         score: score,
         username: userName,
+        image: image,
+        mode: mode,
       ),
     );
 
@@ -51,6 +54,8 @@ class ScoreboardProvider with ChangeNotifier {
         User(
           username: singleUser['username'],
           score: singleUser['score'],
+          mode: singleUser['mode'],
+          image: Uint8List.fromList((singleUser['image'] as String).codeUnits),
         ),
       );
     }
