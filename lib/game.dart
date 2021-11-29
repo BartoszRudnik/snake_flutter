@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
-
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snake_flutter/control_panel.dart';
 import 'package:snake_flutter/direction_type.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:flutter/services.dart';
 import 'package:snake_flutter/provider/scoreboard_provider.dart';
 import 'package:snake_flutter/provider/settings_provider.dart';
 import 'direction.dart';
