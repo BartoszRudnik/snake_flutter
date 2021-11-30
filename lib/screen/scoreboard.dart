@@ -73,19 +73,19 @@ class _ScoreboardState extends State<Scoreboard> with TickerProviderStateMixin<S
 
     return NotificationListener(
       onNotification: handleScrollNotification,
-      child: Scaffold(
-        floatingActionButton: ChangeScoreboardButton(
-          setActiveMode: changeActualMode,
-          hideFloatingButton: hideFloatingButton,
-        ),
-        appBar: ScoreBoardAppBar(
-          actualMode: actualMode,
-          screenshotController: screenshotController,
-        ),
-        backgroundColor: Colors.green[600],
-        body: Screenshot(
-          controller: screenshotController,
-          child: SingleChildScrollView(
+      child: Screenshot(
+        controller: screenshotController,
+        child: Scaffold(
+          floatingActionButton: ChangeScoreboardButton(
+            setActiveMode: changeActualMode,
+            hideFloatingButton: hideFloatingButton,
+          ),
+          appBar: ScoreBoardAppBar(
+            actualMode: actualMode,
+            screenshotController: screenshotController,
+          ),
+          backgroundColor: Colors.green[600],
+          body: SingleChildScrollView(
             child: SizedBox(
               height: MediaQuery.of(context).size.height,
               child: Column(
